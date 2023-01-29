@@ -20,52 +20,52 @@ def start(update: telegram.Update, context: CallbackContext):
     global interval
     if context.args:
         interval = int(context.args[0])
-    update.message.reply_text(f'Scheduler has been started for every {interval} minutes')
+    update.message.reply_text(f'O BOT foi iniciado e o intervalo foi definido para {interval} minutos')
     job_queue = context.job_queue
     job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
 
 def stop(update: telegram.Update, context: CallbackContext):
     job_queue = updater.job_queue
     job_queue.stop()
-    update.message.reply_text(f'Scheduler has been stopped')
+    update.message.reply_text(f'O agendador foi interrompido')
 
 def enable(update: telegram.Update, context: CallbackContext):
     global enabled
     enabled = True
-    update.message.reply_text('Scheduler has been enabled')
+    update.message.reply_text('O agendador foi ativado')
 
 def disable(update: telegram.Update, context: CallbackContext):
     global enabled
     enabled = False
-    update.message.reply_text('Scheduler has been disabled')
+    update.message.reply_text('O agendador foi desativado')
 
 def hourly(update: telegram.Update, context: CallbackContext):
     interval = 60
     job_queue = updater.job_queue
     job_queue.stop()
     job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
-    update.message.reply_text(f'Interval has been set to {interval} minutes')
+    update.message.reply_text(f'O intervalo foi definido para {interval} minutos')
 
 def daily(update: telegram.Update, context: CallbackContext):
     interval = 1440 # 24 hours * 60 minutes
     job_queue = updater.job_queue
     job_queue.stop()
     job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
-    update.message.reply_text(f'Interval has been set to {interval} minutes')
+    update.message.reply_text(f'O intervalo foi definido para {interval} minutos')
 
 def weekly(update: telegram.Update, context: CallbackContext):
     interval = 10080 # 7 days * 24 hours * 60 minutes
     job_queue = updater.job_queue
     job_queue.stop()
     job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
-    update.message.reply_text(f'Interval has been set to {interval} minutes')
+    update.message.reply_text(f'O intervalo foi definido para {interval} minutos')
 
 def monthly(update: telegram.Update, context: CallbackContext):
     interval = 43800 # 30 days * 24 hours * 60 minutes
     job_queue = updater.job_queue
     job_queue.stop()
     job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
-    update.message.reply_text(f'Interval has been set to {interval} minutes')
+    update.message.reply_text(f'O intervalo foi definido para {interval} minutos')
 
 def custom(update: telegram.Update, context: CallbackContext):
     #interval = update.message.text.split()[1]
@@ -74,12 +74,12 @@ def custom(update: telegram.Update, context: CallbackContext):
             interval = int(update.message.text.split()[1])
             job_queue = context.job_queue
             job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
-            update.message.reply_text(f'Scheduler has been started for every {interval} minutes')
+            update.message.reply_text(f'O intervalo foi definido para {interval} minutos')
         except ValueError:
-            update.message.reply_text(f'{interval} is not a valid interval. Please enter a number.')
+            update.message.reply_text(f'{interval} não é um intervalo válido. Por favor, coloque um numero.')
             return
     else:
-        update.message.reply_text("Please provide an interval in minutes")
+        update.message.reply_text("Forneça um intervalo em minutos")
 
 def get_quote(update: telegram.Update, context: CallbackContext):
     if enabled:
@@ -102,7 +102,7 @@ def get_quote(update: telegram.Update, context: CallbackContext):
 def send_quote(context: CallbackContext):
     if enabled:
         try:
-            prompt = "Please give me a random inspirational quote"
+            prompt = "Por favor, me dê uma citação inspiradora e transformadora."
             completions = openai.Completion.create(
                 engine="text-davinci-003",
                 prompt=prompt,
@@ -121,9 +121,9 @@ def start_scheduler(update: telegram.Update, context: CallbackContext):
     interval = int(context.args[0]) if context.args else 30 #if no argument is passed use 30 as default
     job_queue = updater.job_queue
     job_queue.run_repeating(send_quote, timedelta(minutes=interval), context=context)
-    update.message.reply_text(f'Scheduler has been started for every {interval} minutes')
+    update.message.reply_text(f'O agendador foi iniciado a cada {interval} minutos')
     if enabled:
-        prompt = "Please give me a random inspirational quote"
+        prompt = "Por favor, me dê uma citação inspiradora e transformadora."
         completions = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
@@ -136,16 +136,16 @@ def start_scheduler(update: telegram.Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.message.chat_id, text=message)
 
 def create_menu():
-    button_list = [[InlineKeyboardButton("Start", callback_data="start"),
-                    InlineKeyboardButton("Stop", callback_data="stop"),
-                    InlineKeyboardButton("Daily", callback_data="daily"),
-                    InlineKeyboardButton("Weekly", callback_data="weekly"),
-                    InlineKeyboardButton("Get_Quote", callback_data="get_quote")
+    button_list = [[InlineKeyboardButton("Iniciar", callback_data="start"),
+                    InlineKeyboardButton("Parar", callback_data="stop"),
+                    InlineKeyboardButton("Diário", callback_data="daily"),
+                    InlineKeyboardButton("Semanal", callback_data="weekly"),
+                    InlineKeyboardButton("Inspiração", callback_data="get_quote")
                     ]]
     return InlineKeyboardMarkup(button_list)
 
 def menu_handler(update, context):
-    update.message.reply_text("Please select an option:", reply_markup=create_menu())
+    update.message.reply_text("Por favor selecione uma opção:", reply_markup=create_menu())
     
 daily_handler = CommandHandler('daily', daily)
 dispatcher.add_handler(daily_handler)
